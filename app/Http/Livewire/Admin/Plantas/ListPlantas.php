@@ -41,10 +41,11 @@ class ListPlantas extends Component
     public function mount()
     {
         /* $this->centros = Centro::all(); */
-        $this->centros = Centro::orderBy('centro_id','DESC')->get();
-         $this->modalcentros = Centro::orderBy('centro_id','DESC')->get();
+        $this->centros = Centro::orderBy('nombre_centro','ASC')->get();
+         $this->modalcentros = Centro::orderBy('nombre_centro','ASC')->get();
 
     }
+
     public function updatedselectedCentro($centro)
     {  $this->readyToLoad = true;
 
@@ -56,9 +57,6 @@ class ListPlantas extends Component
 
     }
 
- /*  */
-
-
     public function addNewPlanta()
     {
          /* dd('here'); */
@@ -68,19 +66,13 @@ class ListPlantas extends Component
          $this->dispatchBrowserEvent('show-formplanta');
     }
 
-
-
     public function createPlanta()
     {
          /* dd($this->selectedCentroModal); */
           /* dd($this->state);  */
-
         /*   $pid=$this->state['planta_id'];
           $np=$this->state['nombre_planta']; */
-
           /* dd($ids); */
-
-
          /* dd($this->state['nombre_planta']); */
 
         $validateDate= Validator::make(
@@ -97,7 +89,7 @@ class ListPlantas extends Component
 
              $validateDate['planta_id'] = strtoupper($this->state['planta_id']);/*convierte a mayuscula el registro tag */
              $validateDate['nombre_planta'] = strtoupper($this->state['nombre_planta']);
-             $validateDate['id_centro'] = $this->selectedCentroModal;;
+             $validateDate['id_centro'] = $this->selectedCentroModal;
 
 
              Planta::create($validateDate);
@@ -121,8 +113,6 @@ class ListPlantas extends Component
         $this->dispatchBrowserEvent('show-formplanta');
     }
 
-
-
     public function updatePlanta()
     {
          /* dd('here');  */
@@ -138,7 +128,8 @@ class ListPlantas extends Component
 
              ]
              )->validate();
-
+             $validateDate['planta_id'] = strtoupper($this->state['planta_id']);/*convierte a mayuscula el registro tag */
+             $validateDate['nombre_planta'] = strtoupper($this->state['nombre_planta']);
              $validateDate['id_centro'] = $this->selectedCentroModal;
 
 
@@ -160,7 +151,6 @@ class ListPlantas extends Component
         $planta->delete();
         $this->dispatchBrowserEvent('hide-delete-modal', ['message' => 'Planta deleted successfully!']);
     }
-
 
     public function render()
     {

@@ -8,6 +8,8 @@ use App\Models\Planta;
 use App\Models\Strabajo;
 use App\Models\Tag18;
 use App\Models\Trabajo;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Livewire\Component;
 use Livewire\WithFileUploads;
@@ -31,14 +33,42 @@ class ListTrabajosTags18 extends Component
     public $foto_trabajo;
 
     public $trabajo;
-
-
-
     public $selectedCentroListFallas = NULL;
     public $selectedPlantaListFallas = NULL;
     public $selectedStatusModal=NULL;
 
     public $readyToLoad = false;
+
+    public $tag18IdBeingRemoved = null;
+
+    /* public $mensaje=''; */
+
+    protected $rules = [
+        'descripciontrabajo1' => [
+            'required'
+        ],
+        'selectedStatusModal' => [
+            'required'
+        ],
+
+        /* 'foto_trabajo' => [
+            'required',
+            'mimes:jpg,jpeg,png'
+        ], */
+    ];
+
+    protected $messages = [
+        'descripciontrabajo1.required' => 'La descripcion del trabajo es requerida',
+        'selectedStatusModal.required' => 'El Status del trabajo es requerido',
+       /* 'operacion.required' => 'El valor de operacion es requerido',
+        'ubicacion.required' => 'La ubicacion es requerdida'*/
+      /*   'foto_trabajo.required' => ' la imagen es requerida', */
+    ];
+
+    public function updated($propertyName)
+    {
+        $this->validateOnly($propertyName);
+    }
 
 
     public function editconsulta(Trabajo $trabajo)
@@ -102,9 +132,14 @@ class ListTrabajosTags18 extends Component
 
     public function updatetrabajoconsulta()
     {
-           /* dd($this->state); */
+            /* dd($this->state); */
 
-        $validateDate = Validator::make(
+            $date = Carbon::now();
+        /* $date = $date->format('Y-m-d'); */
+        /* $date = $date->toTimeString(); */
+        $date = $date->toDateTimeString();
+
+       /*  $validateDate = Validator::make(
             $this->state,
             [
                 'des_trabajo' => 'required',
@@ -114,16 +149,47 @@ class ListTrabajosTags18 extends Component
                 'des_trabajo.required' => 'La descripcion del trabajo es requerida.',
                 'id_strabajos".required' => 'El Status es requerido.',
             ]
-        )->validate();
+        )->validate(); */
+        $this->validate();
 
 
         $validateDate['des_trabajo'] =  strtoupper($this->descripciontrabajo1);
         $validateDate['id_strabajos'] = $this->selectedStatusModal;
+        $validateDate['updated_at'] = $date;;
+
         /* dd($validateDate); */
 
-        if ($this->foto_trabajo) {
+        /* if ($this->foto_trabajo) {
             $validateDate['foto_trabajo'] = $this->foto_trabajo->store('/', 'planta');
+        } */
+
+        /* Codigo para grabar la imagen nueva y borrar la vieja */
+        if ($this->foto_trabajo != null) {
+            /* para actualizar una imagen */
+             $registro =Trabajo::findOrFail($this->state['id']); /* regresa todo el registro completo */
+            /*  dd($registro);  */
+            $filename = "";
+            $nombreArchivo = $registro->foto_trabajo;
+              /*  dd($nombreArchivo); */
+
+            $destination=public_path('storage\\'.$registro->foto_trabajo);
+             /* dd($destination); */
+             /* imagen usuario*/
+            $previousPath = $registro->foto_trabajo;
+
+             /* dd($previousPath); */
+
+            $path = $this->foto_trabajo->store('/', 'planta');
+            /* dd($path);*/
+
+            $registro->update(['foto_trabajo' => $path]);
+             Storage::disk('planta')->delete($previousPath);
+        } else {
+                /* codigo para la imagen cambiar */
         }
+
+
+
 
         $falla1 = Falla::find($this->id_falla);
          $tagNombre = $falla1->id_tag18s;
@@ -133,6 +199,7 @@ class ListTrabajosTags18 extends Component
 
          if ($this->selectedStatusModal == 7) {
             $validateTags['id_status'] = 1;
+
             $tag18->update($validateTags);
         }
 
@@ -141,6 +208,52 @@ class ListTrabajosTags18 extends Component
         $this->dispatchBrowserEvent('hide-formtrabajoeditconsulta', ['message' => 'El trabajo  updated successfully!']);
     }
 
+    protected function cleanupOldUploads()
+    {
+
+        $storage = storage::disk('local');
+        /*  dd($storage->allFiles(('livewire-tmp'))); */
+
+        foreach ($storage->allFiles('livewire-tmp') as $filePathname) {
+            $yesterdaysStamp = now()->subSecond(4)->timestamp;
+            if ($yesterdaysStamp > $storage->lastModified($filePathname)) {
+                $storage->delete($filePathname);
+            }
+        }
+    }
+
+
+    public function confirmTrabajoRemoval($trabajoId)
+    {
+        /* dd($tag18Id); */
+        $this->tag18IdBeingRemoved = $trabajoId;
+        $this->dispatchBrowserEvent('show-delete-modal-trabajo');
+    }
+    public function deleteTrabajo()
+    {
+        $trabajo = Trabajo::findOrFail($this->tag18IdBeingRemoved);
+        /* dd($tag18); */
+        /* dd($tag18->foto); */
+
+        /* **************Pone el tag disponible********** */
+        $falla1 = Falla::find($this->id_falla);
+        $tagNombre = $falla1->id_tag18s;
+
+        $tag18= Tag18::find($tagNombre);
+       /*  $tag= $tagsValores->tag; */
+
+
+           $validateTags['id_status'] = 1;
+           $validateTags['tfalla']='FALSE';
+           $validateTags['ttrabajo']='FALSE';
+           $tag18->update($validateTags);
+
+
+        Storage::disk('planta')->delete($trabajo->foto_trabajo);  /* Elimina solo la imagen */
+        $trabajo->delete();
+
+        $this->dispatchBrowserEvent('hide-delete-modal-trabajo', ['message' => 'Tag deleted successfully!']);
+    }
 
     public function mount(Tag18 $tag18)
     {
@@ -148,7 +261,7 @@ class ListTrabajosTags18 extends Component
 
         $this->tag18 = $tag18;
         $this->statefalla = $tag18->toArray();
-        /* dd($tag18); */
+          /*  dd($tag18); */
 
         $this->selectedCentroListFallas = $this->statefalla['id_cen'];
         $this->selectedPlantaListFallas = $this->statefalla['id_planta'];
@@ -174,13 +287,12 @@ class ListTrabajosTags18 extends Component
 
     public function render()
     {
+
         /* busqueda anterior  */
         /* $trabajos = Trabajo::join('fallas','fallas.id_tag18s','=','trabajos.id_tag18')
                     ->where('id_tag18','=',  $this->tag)
                     ->get();
- */
-
-
+        */
 
         $trabajos = Trabajo::join('fallas', 'fallas.id', '=', 'trabajos.id_falla')
             /* ->select('trabajos.*','fallas.*') */
@@ -198,8 +310,6 @@ class ListTrabajosTags18 extends Component
         /* dd($trabajos); */
 
 
-
-        /* dd($trabajos); */
         return view('livewire.admin.tag18.list-trabajos-tags18')
             ->with('trabajos', $trabajos);
     }

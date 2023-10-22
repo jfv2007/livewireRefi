@@ -77,6 +77,8 @@ class ListSeccions extends Component
              ]
              )->validate();
 
+             $validateDate['descripcion_s'] = strtoupper($this->state['descripcion_s']);/*convierte a mayuscula el registro tag */
+
              $this->seccion->update($validateDate);
              $this->dispatchBrowserEvent('hide-formseccion',['message' => 'Seccion updated successfully!']);
     }

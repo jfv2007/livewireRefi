@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 
 class Tag18 extends Model
 {
@@ -36,11 +37,25 @@ class Tag18 extends Model
         if ($this->foto) {
 
             /* return Storage::disk('avatars')->url($this->avatar); */
-            return  asset('storage/planta/'.$this->foto);
+             /*  return Storage::disk('planta')->url($this->foto);  */
+             return  asset('storage/planta/'.$this->foto); 
         }
 
         return asset('noimage.png');
     }
+
+
+      public function getfoto_fallaUrlAttribute()
+    {
+        if ($this->foto_falla) {
+
+
+            return  asset('storage/planta/'.$this->foto_falla);
+        }
+
+        return asset('noimage.png');
+    }
+
 
     public function getFoto1UrlAttribute()
     {

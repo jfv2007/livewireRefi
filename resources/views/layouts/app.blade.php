@@ -215,6 +215,7 @@
             $('#confirmationModalFalla').modal('show');
         })
 
+
         window.addEventListener('show-delete-modal-trabajo', event => {
             $('#confirmationModalTrabajo').modal('show');
         })

@@ -9,6 +9,7 @@ use App\Models\Strabajo;
 use App\Models\Tag18;
 use App\Models\Trabajo;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Livewire\Component;
 use Livewire\WithFileUploads;
@@ -39,9 +40,10 @@ class ListFallasTags18 extends Component
     public $descripciontrabajo;
     public $consuleditFallaModal=false;
     public $id_tag18s;
-    public $descripcionfalla;
+    public $descripcion_falla;
     public $selectedStatusModal;
     public $foto_falla;
+    public $fallaIdBeingRemoved = null;
 
 
     public $selectedCentroListFallas = NULL;
@@ -49,6 +51,35 @@ class ListFallasTags18 extends Component
     public $selectedStatusModalTrabajo = NULL;
     public $readyToLoad = false;
 
+    protected $rules = [
+        /* 'descripcionfalla' => [
+            'required'
+        ],
+        'selectedStatusModal' => [
+            'required'
+        ], */
+
+        'descripciontrabajo' => [
+            'required'
+        ],
+         'foto_trabajo' => [
+            'required',
+            'mimes:jpg,jpeg,png'
+        ],
+    ];
+
+    protected $messages = [
+        /*'descripcionfalla.required' => 'La descripcion de la falla es requerida',
+        'selectedStatusModal.required' => 'El Status de la falla es requerido',
+       /* 'operacion.required' => 'El valor de operacion es requerido',*/
+        'descripciontrabajo.required' => 'La descripcion es requerdida',
+        'foto_trabajo.required' => ' la imagen es requerida'
+    ];
+
+    public function updated($propertyName)
+    {
+        $this->validateOnly($propertyName);
+    }
 
    /*  public function historialTag(Tag18 $tag18)
     {
@@ -104,7 +135,7 @@ class ListFallasTags18 extends Component
    /* } */
    public function editconsul(Falla $falla)
    {
-       /* dd($falla); */
+         /* dd($falla);  */
        $this->consuleditFallaModal = true;
        /*  dd('hola'); */
        $this->falla = $falla;
@@ -114,7 +145,7 @@ class ListFallasTags18 extends Component
 
        $this->id_tag18s = $this->state['id_tag18s'];
 
-       $this->descripcionfalla = $this->state['descripcion_falla'];
+       $this->descripcion_falla = $this->state['descripcion_falla'];
        $this->selectedStatusModal = $this->state['id_sfallas'];
        /* dd($this->id_tag18); */
 
@@ -132,12 +163,12 @@ class ListFallasTags18 extends Component
 
    public function updateFallaConsulta()
     {
-        /* dd($this->state); */
+         /* dd($this->state); */
         /* if($this->selectedStatusModal==""){
             $this->mensaje= 'Faltan parametros';
             /*  dd($this->mensaje); */
       /*   } */
-        $validateDate = Validator::make(
+         $validateDate = Validator::make(
             $this->state,
             [
                 'descripcion_falla' => 'required',
@@ -145,12 +176,16 @@ class ListFallasTags18 extends Component
             ],
             [
                 'descripcion_falla.required' => 'La descripcion de la falla es requerida.',
-                'id_sfallas".required' => 'El Status es requerido.',
+                'id_sfallas.required' => 'El Status es requerido.',
 
             ]
         )->validate();
 
-        $validateDate['descripcion_falla'] = $this->descripcionfalla;
+         /* $this->validate(); */
+
+
+
+        $validateDate['descripcion_falla'] = strtoupper($this->descripcion_falla);
         $validateDate['id_sfallas'] = 3;
         /* dd($this->foto_falla); */
        /*   dd($this->selectedStatusModal); */
@@ -161,23 +196,76 @@ class ListFallasTags18 extends Component
             /* dd($this->mensaje);*/
      /*   } */
 
-        if ($this->foto_falla) {
-            $validateDate['foto_falla'] = $this->foto_falla->store('/', 'planta');
-            /*   $validateDate['avatar'] = $this->photo->store('/', 'avatars'); */
+        if ($this->foto_falla != null) {
+            /* para actualizar una imagen */
+             $registro =Falla::findOrFail($this->state['id']); /* regresa todo el registro completo */
+            /*  dd($registro);  */
+            $filename = "";
+            $nombreArchivo = $registro->foto_falla;
+              /*  dd($nombreArchivo); */
+
+            $destination=public_path('storage\\'.$registro->foto_falla);
+             /* dd($destination); */
+             /* imagen usuario*/
+            $previousPath = $registro->foto_falla;
+
+             /* dd($previousPath); */
+
+            $path = $this->foto_falla->store('/', 'planta');
+            /* dd($path);*/
+
+            $registro->update(['foto_falla' => $path]);
+             Storage::disk('planta')->delete($previousPath);
+        } else {
+                /* codigo para la imagen cambiar */
         }
+
+
+        /* if ($this->foto_falla) {
+            $validateDate['foto_falla'] = $this->foto_falla->store('/', 'planta');
+        } */
 
         $this->falla->update($validateDate);
         $this->dispatchBrowserEvent('hide-formfallaeditconsul', ['message' => 'Falla updated successfully!']);
     }
 
+    protected function cleanupOldUploads()
+    {
+
+        $storage = storage::disk('local');
+       /*  dd($storage->allFiles(('livewire-tmp'))); */
+
+        foreach ($storage->allFiles('livewire-tmp') as $filePathname) {
+            $yesterdaysStamp = now()->subSecond(4)->timestamp;
+            if ($yesterdaysStamp > $storage->lastModified($filePathname)) {
+                $storage->delete($filePathname);
+            }
+        }
+    }
+
+    public function confirmFallaRemoval($fallaId)
+    {
+        /* dd($tag18Id); */
+        $this->fallaIdBeingRemoved = $fallaId;
+        $this->dispatchBrowserEvent('show-delete-modal-falla');
+    }
+    public function deleteFalla()
+    {
+        $falla = Falla::findOrFail($this->fallaIdBeingRemoved);
+
+        Storage::disk('planta')->delete($falla->foto_falla);  /* Elimina solo la imagen */
+        $falla->delete();
+        $this->dispatchBrowserEvent('hide-delete-modal-falla', ['message' => 'La falla ha sido borrada exitosamente!']);
+    }
+
     public function agregartrabajo(Falla $falla)
    {
-     /* dd($falla); */
-    $this->showAgregarTrabajoModal=true;
+      /* dd($falla);  */
+        $this->showAgregarTrabajoModal=true;
 
-    $this->falla=$falla;
+        $this->falla=$falla;
         $this->statetrabajo=$falla->toArray();
-      /*    dd($this->statetrabajo); */
+          /* dd($this->statetrabajo);  */
 
         $this->trabajo_id_tag18s = $this->statetrabajo['id_tag18s'];
 
@@ -198,10 +286,13 @@ class ListFallasTags18 extends Component
 
    public function addtrabajoitem()
    {
-        /* dd($this->statetrabajo); */
+         /*  dd($this->state); */
+           /* dd($this->statetrabajo);  */
         /* dd($this->selectedStatusModalTrabajo); */
-         /* dd($this->descripciontrabajo); */
+        /*   dd($this->descripciontrabajo); */
         /* dd($this->trabajo_id_tag18s);  */
+
+        $this->validate();
 
         $tag18 = Tag18::find($this->trabajo_id_tag18s);
         $this->tag18=$tag18;
@@ -212,15 +303,19 @@ class ListFallasTags18 extends Component
         /* $date = $date->toTimeString(); */
          $date =$date->toDateTimeString();
 
-        $validateDate= Validator::make(
+        /* $validateDate= Validator::make(
            $this->statetrabajo,
            [
-               'id'=>'required',
+                'id'=>'required',
+                'descripciontrabajo'=>'required',
            ],
            [
-               'id.required' =>' El Tag es requerido.',
+                'id.required' =>' El Tag es requerido.',
+               'descripciontrabajo' =>'La descripcion es requerida',
            ]
-            )->validate();
+            )->validate(); */
+
+
 
             $validateDate['id_falla']=$this->statetrabajo['id'];
             /* $validateDate['id_user'] = auth()->user()->id; */
@@ -248,6 +343,8 @@ class ListFallasTags18 extends Component
             $this->tag18->update($validateTag18);
 
             $this->dispatchBrowserEvent('hide-formtrabajoAgregar',['message' => 'agregado trabajo satisfactorio!']);
+            /* return redirect()->back(); */
+
    }
 
 
@@ -257,7 +354,7 @@ class ListFallasTags18 extends Component
 
            $this->tag18 = $tag18;
            $this->statefalla=$tag18->toArray();
-            /* dd($tag18); */
+            /*  dd($tag18);  */
 
          $this->selectedCentroListFallas = $this->statefalla['id_cen'];
          $this->selectedPlantaListFallas = $this->statefalla['id_planta'];
@@ -285,7 +382,6 @@ class ListFallasTags18 extends Component
 
     public function render()
     {
-
         $fallas = Falla::where('id_tag18s','LIKE',$this->tag)->get();
 
         return view('livewire.admin.tag18.list-fallas-tags18')

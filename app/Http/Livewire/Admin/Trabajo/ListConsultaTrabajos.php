@@ -2,12 +2,9 @@
 
 namespace App\Http\Livewire\Admin\Trabajo;
 
-use App\Models\Categoria;
 use App\Models\Centro;
 use App\Models\Falla;
 use App\Models\Planta;
-use App\Models\Seccion;
-use App\Models\Stag;
 use App\Models\Tag18;
 use App\Models\Trabajo;
 use Illuminate\Support\Facades\Storage;
@@ -15,90 +12,42 @@ use Illuminate\Support\Facades\Validator;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use Livewire\WithPagination;
-use ProtoneMedia\LaravelCrossEloquentSearch\Search;
 
-class ListTrabajos extends Component
+class ListConsultaTrabajos extends Component
 {
+
     use WithFileUploads;
     use WithPagination;
-    protected $paginationTheme = 'bootstrap';
 
+    Public $statefalla = [];
     public $state = [];
-    public $statetrabajo =[];
-    public $centros=[];
-    public $modalcentros=[];
-    public $modalplantas=[];
-    public $fallaplantas=[];
-    public $plantas=[];
-    public $seccions=[];
-    public $fallastatus=[];
-    public $statusModals=[];
-
-    public $categorias;
-    public $status;
-    public $foto;
-    public $foto_trabajo;
-    public $editTrabajoModal=false;
     public $tag18;
-    public $planta;
-    public $trabajo;
+    public $falla;
+
+    public $centros = [];
+    public $plantas;
+    public $tag;
+    public $foto_trabajo;
+    public $id_tag;
+    public $editTrabajoModal=false;
     public $id_falla;
     public $des_trabajo;
     public $id_tag18s;
     public $tagnombre;
     public $descripcionfalla;
     public $descripciontrabajo1;
-
-    public $selectedCentro = NULL;
-    public $selectedPlanta = NULL;
-    public $selectedSeccion = NULL;
-    public $selectedCategoria = NULL;
-    public $selectedStatus = NULL;
-
     public $selectedStatusModal = NULL;
-
-    protected $listeners = ['deleteConfirmed' => 'deleteTag'];
 
     public $trabajoIdBeingRemoved = null;
 
-    public $byCenter = null;
-    public $perPage = 5;
-    public $sortBy = 'asc';
-    public $search;
-    public $messaje = 'Para mostrar';
-    public $readyToLoad = false;
-    public $porAno;
+
+    public $trabajo;
+    public $selectedCentroListFallas = NULL;
+    public $selectedPlantaListFallas = NULL;
 
 
-    public function mount()
+    public function editconsulta(Trabajo $trabajo)
     {
-        $this->centros = Centro::orderBy('nombre_centro','ASC')->get();
-        $this->seccions = Seccion::orderBy('descripcion_s', 'ASC')->get();
-        $this->categorias = Categoria::orderBy('descripcion_c', 'ASC')->get();
-        $this->status = Stag::all();
-        $this->statusModals =Stag::all();
-        $this->fallastatus=Stag::all();
-        $this->tag18 = Tag18::all();
-
-        $fechaactual=now()->year;
-        $this->porAno=$fechaactual;
-
-
-    }
-
-    public function updatedselectedCentro($centro)
-    {  $this->readyToLoad = true;
-
-        /* dd($centro);  */
-        $this->plantas = Planta::where('id_centro', $centro)
-        ->orderBy('nombre_planta','ASC')->get();
-        /* $this->selectedPlanta = NULL; */
-        $this->planta = $this->plantas->first()->id ?? null;
-    }
-
-    public function edit(Trabajo $trabajo)
-    {
-
              /* dd($trabajo); */
 
         $this->editTrabajoModal = true;
@@ -166,7 +115,6 @@ class ListTrabajos extends Component
             [
                 'des_trabajo' => 'required',
                 'id_strabajos' => 'required',
-                
             ],
             [
                 'des_trabajo.required' => 'La descripcion del trabajo es requerida.',
@@ -268,49 +216,91 @@ class ListTrabajos extends Component
         $this->dispatchBrowserEvent('hide-delete-modal-trabajo', ['message' => 'El trabajo ha sido borrada exitosamente!']);
     }
 
-    public function render()
+
+    public function mount(Falla $falla)
     {
-          if ($this->readyToLoad  ) {
-            /*  $trabajos = Trabajo::with('fallatrabajos', 'tagstrabajos','statustraba')
-            ->paginate(); */
+                /* dd($falla); */
+        /* se pasan los valores a los combos */
+        $this->falla = $falla;
+        $this->statefalla = $falla->toArray();
+        $this->statefalla['id_tag18s'];
 
-                $trabajos = Trabajo::join('fallas','fallas.id','=','trabajos.id_falla')
-                /* ->select('trabajos.*','fallas.*') */
-                ->join('tag18s','tag18s.id','=','fallas.id_tag18s')
-                /* ->select('trabajos.*','tag18s.*','fallas.*') */
-                ->when($this->selectedCentro, function ($query){
-                    $query->whereRelation('fallatrabajos', 'id_cen', $this->selectedCentro)
-                    ->whereYear('trabajos.created_at',now()->year($this->porAno))
-                    ->select('trabajos.*');
-                 })
-                  ->when($this->selectedPlanta, function ($query) {
-                    $query->whereRelation('fallatrabajos', 'id_planta', $this->selectedPlanta)
+        /* $this->id_tag18s =$this->id_falla; */
+        /*   dd($this->des_trabajo); */
 
-                    ->select('trabajos.*');
-                })
-                ->when($this->selectedCategoria, function ($query) {
-                    $query->whereRelation('fallatrabajos', 'id_categoria',  $this->selectedCategoria)
-                    ->select('trabajos.*');
-                })
-                ->when($this->selectedStatus, function ($query) {
-                    $query->where('id_strabajos', $this->selectedStatus)
-                    ->select('trabajos.*');
-                })
-                ->when($this->search, function($query){
-                    $query->whereRelation('fallatrabajos', 'tag','like','%' .$this->search. '%')
-                    ->select('trabajos.*');
-                })
+        /* $falla = Falla::where('id', $this->id) */
 
-                   ->paginate();
-             } else {
-                $trabajos = [];
-            }
+          /* $falla1 = Falla::with('fallatrabajos')
+          ->orWhereHas('fallatrabajos',function ($query){
+             $query->where('id', $this->id_falla);
+         })
+         ->get(); */
+          /* $falla1 = Falla::find($this->id_falla);
+          $tagNombre = $falla1->id_tag18s; */
+
+          $tagsValores= Tag18::find($this->statefalla['id_tag18s']);
+          /* $id_centro= $tagsValores->id_cen;
+           $id_planta= $tagsValores->id_planta; */
+          $id_tag=$tagsValores->id;
+            /*  dd($tagsValores); */
+           /*  dd($id_centro); */
+           /*  dd($tag); */
 
 
+         /* $tagsValores= Tag18::where('id','=',$this->statefalla['id_tag18s'])->get(); */
+          /* $registro =Tag18::findOrFail($this->$id_tag); */
+         /* $tagsValores= Tag18::find($this->$id_tag); */
+         /* dd($tagsValores); */
+         /* $id_centro =$this->id_cen;
+         dd($id_centro); */
 
-        return view('livewire.admin.trabajo.list-trabajos')
-        ->with('trabajos', $trabajos);
+
+        $this->selectedCentroListFallas = $tagsValores->id_cen;
+        $this->selectedPlantaListFallas = $tagsValores->id_planta;
+        $this->tag = $id_tag;    /* es el id del trag no de la falla */
+
+
+        $this->centros = Centro::orderBy('centro_id', 'DESC')->get();
+        $this->plantas = Planta::orderby('nombre_planta', 'DESC')->get();
+
+
+        /* $this->status = Strabajo::all(); */
+
+        /*  $fallas = Falla::with(['tagfallas', 'fllastatus'])
+        ->where('id_tag18s','=', 1557); */
+
+        /* $tagBusqueda= Tag18:: where('id','1557')->get(); */
+
+
+        /* dd($fallas); */
+        /* dd($tagBusqueda); */
     }
 
+    public function render()
+    {
 
+        $trabajos = Trabajo::join('fallas', 'fallas.id', '=', 'trabajos.id_falla')
+            /* ->select('trabajos.*','fallas.*') */
+            ->join('tag18s', 'tag18s.id', '=', 'fallas.id_tag18s')
+            /* ->select('trabajos.*','tag18s.*','fallas.*') */
+            ->whereRelation('fallatrabajos', 'id_cen', $this->selectedCentroListFallas)
+            ->select('trabajos.*')
+
+            ->whereRelation('fallatrabajos', 'id_planta', $this->selectedPlantaListFallas)
+            ->select('trabajos.*')
+
+            ->where('trabajos.id_tag18', '=', $this->tag)
+
+            ->get();
+        /* dd($trabajos); */
+
+
+        /* return view('livewire.admin.falla.list-consultas') */
+
+
+
+        return view('livewire.admin.trabajo.list-consulta-trabajos')
+
+        ->with('trabajos', $trabajos);
+    }
 }

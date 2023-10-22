@@ -113,10 +113,16 @@
                                              {{-- <td>{{ $falla->fllastatus->status_revison }}</td>  --}}
                                             <td>{{ $falla->created_at }}</td>
                                             <td>
-                                              <a href="" data-toggle="tooltip" data-placement="top" title="Editar Falla"
+
+                                                @if ($falla->fllastatus->status_revison == 'ATENDIDO')
+                                                    @else
+                                                    <a href="" data-toggle="tooltip" data-placement="top" title="Editar Falla"
                                                     wire:click.prevent="editconsul({{ $falla }})">
                                                         <i class="fa fa-edit mr-2"></i>
                                                     </a>
+                                                @endif
+
+
                                                     <a href="" data-toggle="tooltip" data-placement="top" title="Eliminar Falla"
                                                         wire:click.prevent="confirmFallaRemoval({{ $falla->id }})">
                                                         <i class="fa fa-trash text-danger mr-2"></i>
@@ -130,7 +136,7 @@
                                                         <i class="fas fa-brush mr-2"></i>
                                                         </a>
                                                     @endif
-                                                    {{-- SI TIENE TRABAJOS --}}
+                                                    {{-- SI TIENE TRABAJOS consultar trabajo--}}
                                                     @if ($tag18->ttrabajo == 'TRUE')
                                                         <a  href="{{ route('admin.tag18s.list-trabajos', $tag18) }}"
                                                         data-toggle="tooltip" data-placement="top" title="Consultar Trabajo" >
@@ -219,7 +225,7 @@
                     {{-- Descripcion del Trabajo --}}
                     <div class="form-group">
                         <label for="descripciontrabajo">Descripcion del Trabajo</label>
-                        <input type="text" style="text-transform:uppercase" wire:model.defer="descripciontrabajo"
+                        <input type="text" style="text-transform:uppercase" wire:model="descripciontrabajo"
                             class="form-control @error('descripciontrabajo') is-invalid @enderror" id="descripciontrabajo"
                             aria-describedby="descripciontrabajoHelp">
                         @error('descripciontrabajo')
@@ -234,7 +240,7 @@
                     <div class="col-span-6 sm:col-span-3 mt-3">
                         <div liwire:ignore>
                             <label for="" class="block text-sm font-medium text-gray-700">Status</label>
-                            <select wire:model.defer="selectedStatusModalTrabajo" id="id_status"
+                            <select wire:model="selectedStatusModalTrabajo" id="id_status"
                                 class="form-control @error('selectedStatusModalTrabajo') is-invalid @enderror">
                                {{--  <option value="">Seleccionar el Status</option> --}}
                                  {{--  @foreach ($status as $statu)
@@ -271,6 +277,7 @@
                             <div class="custom-file">
                                 <input wire:model="foto_trabajo" type="file" class="custom-file-input"
                                     id="customFile">
+                                    @error('foto_trabajo') <span class="text-danger">{{ $message }}</span> @enderror
                                 {{-- <div x-show.transition="isUploading" class="progress progress-sm mt-2 rounded">
                                 </div> --}}
                                 <label class="custom-file-label" for="customFile">
@@ -299,7 +306,7 @@
             </div>
         </form>
     </div>
-</div> {{-- Modal --}}
+    </div> {{-- Modal --}}
 
 <!-- Modal Editar-->
 <div class="modal fade"wire:ignore.self id="formfallaeditconsul" role="dialog" aria-labelledby="exampleModalLabel"
@@ -317,7 +324,8 @@ aria-hidden="true">
             </div>
             <div class="modal-body">
                 {{-- ID de Tag invisible --}}
-                <div class="invisible"  >
+                {{-- <div class="invisible"  style="display":none;> --}}
+                <div style="display":none;>
                     <label for="id_tag18s">id de Tag</label>
                     <input type="text" wire:model.defer="id_tag18s"
                         class="form-control @error('id_tag18s') is-invalid @enderror" id="id_tag18s"
@@ -354,11 +362,11 @@ aria-hidden="true">
                 </div>
                 {{-- Descripcion de la falla  --}}
                 <div class="form-group">
-                    <label for="descripcionfalla">Descripcion de Falla</label>
-                    <input type="text" style="text-transform:uppercase" wire:model.defer="descripcionfalla"
-                        class="form-control @error('descripcionfalla') is-invalid @enderror" id="descripcionfalla"
-                        aria-describedby="descripcionfallaHelp">
-                    @error('descripcionfalla')
+                    <label for="descripcion_falla">Descripcion de Falla</label>
+                    <input type="text" style="text-transform:uppercase" wire:model="descripcion_falla"
+                        class="form-control @error('descripcion_falla') is-invalid @enderror" id="descripcion_falla"
+                        aria-describedby="descripcion_fallaHelp">
+                             @error('descripcion_falla')
                         <div class="invalid-feedback">
                             {{ $message }}
                         </div>
@@ -373,7 +381,7 @@ aria-hidden="true">
                         <label for="" class="block text-sm font-medium text-gray-700">Status</label>
                         <select wire:model.defer="selectedStatusModal" id="id_status"
                             class="form-control @error('selectedStatusModal') is-invalid @enderror">
-                           {{--  <option value="">Seleccionar el Status</option> --}}
+                             <option value="">Seleccionar el Status</option>
                             {{-- @foreach ($status as $statu)
                                 <option value="{{ $statu->id }}">{{ $statu->desc_status }}
                                 </option>
@@ -382,11 +390,12 @@ aria-hidden="true">
                         </select>
                         @error('selectedStatusModal')
                             <div class="invalid-feedback">
-                                {{ $mensaje }}
+                                {{ $message }}
                             </div>
                         @enderror
                     </div>
                 </div> {{-- "col-md-6" --}}
+
                 {{-- escoger imagen --}}
                 <div class="col-md-12">
                     <div class="form-group">
@@ -405,6 +414,7 @@ aria-hidden="true">
                         <div class="custom-file">
                             <input wire:model="foto_falla" type="file" class="custom-file-input"
                                 id="customFile">
+                                @error('foto_falla') <span class="text-danger">{{ $message }}</span> @enderror
                             {{-- <div x-show.transition="isUploading" class="progress progress-sm mt-2 rounded">
                             </div> --}}
                             <label class="custom-file-label" for="customFile">
@@ -435,5 +445,27 @@ aria-hidden="true">
 </div>
 </div> {{-- Modal --}}
 
+{{-- Modal --DELETE --}}
+<div class="modal fade" id="confirmationModalFalla"   role="dialog" aria-labelledby="exampleModalLabel"
+aria-hidden="true" wire:ignore.self>
+<div class="modal-dialog" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5>Delete Falla</h5>
+        </div>
+
+        <div class="modal-body">
+            <h4>Are you sure want to delete this Fail?</h4>
+        </div>
+
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"> <i
+                    class="fa fa-times mr-1"></i> Cancel</button>
+            <button type="button" wire:click.prevent="deleteFalla" class="btn btn-danger"> <i
+                    class="fa fa-trash mr-1"></i> Delete Falla </button>
+        </div>
+    </div>
+</div>
+</div>
 
 </div>

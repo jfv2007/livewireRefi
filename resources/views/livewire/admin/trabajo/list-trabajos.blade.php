@@ -21,13 +21,13 @@
         {{-- Por año --}}
         <div class="col-md-1">
             <div wire:ignore>
-            <label for="" class="text-warning">Por año</label>
-            <select class="form-control" wire:model=porAno>
-                <option value= 2022 class="p-3 mb-2 bg-info text-dark">2022</option>
-                <option value= 2023 class="p-3 mb-2 bg-info text-dark">2023</option>
-                <option value= 2024 class="p-3 mb-2 bg-info text-dark">2024</option>
-                <option value= 2025 class="p-3 mb-2 bg-info text-dark">2025</option>
-            </select>
+                <label for="" class="text-warning">Por año</label>
+                <select class="form-control" wire:model=porAno>
+                    <option value=2022 class="p-3 mb-2 bg-info text-dark">2022</option>
+                    <option value=2023 class="p-3 mb-2 bg-info text-dark">2023</option>
+                    <option value=2024 class="p-3 mb-2 bg-info text-dark">2024</option>
+                    <option value=2025 class="p-3 mb-2 bg-info text-dark">2025</option>
+                </select>
             </div>
         </div>
 
@@ -35,18 +35,18 @@
         <div class="col-md-1">
             <label for="" class="text-warning">Por Mes</label>
             <select class="form-control" wire:model=porAno>
-                <option value= 1 class="p-3 mb-2 bg-info text-dark">ENERO</option>
-                <option value= 2 class="p-3 mb-2 bg-info text-dark">FEBRERO</option>
-                <option value= 3 class="p-3 mb-2 bg-info text-dark">MARZO</option>
-                <option value= 4 class="p-3 mb-2 bg-info text-dark">ABRIL</option>
-                <option value= 5 class="p-3 mb-2 bg-info text-dark">MAYO</option>
-                <option value= 6 class="p-3 mb-2 bg-info text-dark">JUNIO</option>
-                <option value= 7 class="p-3 mb-2 bg-info text-dark">JULIO</option>
-                <option value= 8 class="p-3 mb-2 bg-info text-dark">AGOSTO</option>
-                <option value= 9 class="p-3 mb-2 bg-info text-dark">SEPTIEMBRE</option>
-                <option value= 10 class="p-3 mb-2 bg-info text-dark">OCTUBRE</option>
-                <option value= 11 class="p-3 mb-2 bg-info text-dark">NOVIEMBRE</option>
-                <option value= 12 class="p-3 mb-2 bg-info text-dark">DICIEMBRE</option>
+                <option value=1 class="p-3 mb-2 bg-info text-dark">ENERO</option>
+                <option value=2 class="p-3 mb-2 bg-info text-dark">FEBRERO</option>
+                <option value=3 class="p-3 mb-2 bg-info text-dark">MARZO</option>
+                <option value=4 class="p-3 mb-2 bg-info text-dark">ABRIL</option>
+                <option value=5 class="p-3 mb-2 bg-info text-dark">MAYO</option>
+                <option value=6 class="p-3 mb-2 bg-info text-dark">JUNIO</option>
+                <option value=7 class="p-3 mb-2 bg-info text-dark">JULIO</option>
+                <option value=8 class="p-3 mb-2 bg-info text-dark">AGOSTO</option>
+                <option value=9 class="p-3 mb-2 bg-info text-dark">SEPTIEMBRE</option>
+                <option value=10 class="p-3 mb-2 bg-info text-dark">OCTUBRE</option>
+                <option value=11 class="p-3 mb-2 bg-info text-dark">NOVIEMBRE</option>
+                <option value=12 class="p-3 mb-2 bg-info text-dark">DICIEMBRE</option>
             </select>
         </div>
 
@@ -57,7 +57,8 @@
                 <label for="" class="text-warning">Centros</label>
                 <select wire:model="selectedCentro" id="id_centro" class="form-control select2">
                     @foreach ($centros as $centro)
-                        <option value="{{ $centro->id }}" class="p-3 mb-2 bg-info text-dark">{{ $centro->nombre_centro }}
+                        <option value="{{ $centro->id }}" class="p-3 mb-2 bg-info text-dark">
+                            {{ $centro->nombre_centro }}
                         </option>
                     @endforeach
                 </select>
@@ -72,7 +73,8 @@
                     <select wire:model="selectedPlanta"
                         class="form-control @error('selectedPlanta') is-invalid @enderror">
                         @foreach ($plantas as $planta)
-                            <option value="{{ $planta->id }}" class="p-3 mb-2 bg-info text-dark">{{ $planta->nombre_planta }}
+                            <option value="{{ $planta->id }}" class="p-3 mb-2 bg-info text-dark">
+                                {{ $planta->nombre_planta }}
                             </option>
                         @endforeach
                     </select>
@@ -86,7 +88,8 @@
                 <label for="" class="text-warning">Categoria</label>
                 <select wire:model="selectedCategoria" class="form-control">
                     @foreach ($categorias as $categoria)
-                        <option value="{{ $categoria->id }}" class="p-3 mb-2 bg-info text-dark">{{ $categoria->descripcion_c }}
+                        <option value="{{ $categoria->id }}" class="p-3 mb-2 bg-info text-dark">
+                            {{ $categoria->descripcion_c }}
                         </option>
                     @endforeach
                 </select>
@@ -123,7 +126,8 @@
         {{-- Por busqueda --}}
         <div class="col-md-2">
             <label for="" class="text-warning">Search</label>
-            <input type="text" style="text-transform:uppercase" class="form-control" wire:model.debounce.350ms="search">
+            <input type="text" style="text-transform:uppercase" class="form-control"
+                wire:model.debounce.350ms="search">
         </div>
 
         {{-- <div class="content" wire:init="loadTags"> --}}
@@ -169,8 +173,8 @@
                                                             <span class="badge badge-primary">TERMINADO</span>
                                                         @elseif($trabajo->statustraba->status_trabajos)
                                                             <span class="badge badge-success">
-                                                            {{ $trabajo->statustraba->status_trabajos }}
-                                                             </span>
+                                                                {{ $trabajo->statustraba->status_trabajos }}
+                                                            </span>
                                                         @endif
                                                     </td>
 
@@ -185,18 +189,37 @@
                                                     <td>{{ $falla->fllastatus->status_revison }}</td>
                                                     <td>{{ $falla->created_at }}</td> --}}
                                                     <td>
-                                                        <a href="" data-toggle="tooltip" data-placement="top" title="Editar Trabajo"
-                                                            wire:click.prevent="edit({{ $trabajo }})">
-                                                            <i class="fa fa-edit mr-2"></i>
-                                                        </a>
+
+                                                        {{-- @if ($trabajo->statustraba->status_trabajos == 'TERMINADO')
+                                                        @else --}}
+                                                            <a href="" data-toggle="tooltip"
+                                                                data-placement="top" title="Editar Trabajo"
+                                                                wire:click.prevent="edit({{ $trabajo }})">
+                                                                <i class="fa fa-edit mr-2"></i>
+                                                            </a>
+                                                        {{-- @endif --}}
                                                     </td>
                                                     <td>
-                                                        <a href="" data-toggle="tooltip" data-placement="top" title="Eliminar Trabajo"
+                                                        <a href="" data-toggle="tooltip" data-placement="top"
+                                                            title="Eliminar Trabajo"
                                                             wire:click.prevent="confirmTrabajoRemoval({{ $trabajo->id }})">
                                                             <i class="fa fa-trash text-danger mr-2"></i>
                                                         </a>
                                                     </td>
+                                                    <td>
+                                                        {{-- SI TIENE FALLAS href="{{ route('admin.tag18s.list-fallas', $tag18) }}" --}}
+                                                         @if ($trabajo->fallatrabajos->tagfallas->tfalla == 'TRUE')
+                                                            <a href="{{ route('admin.trabajo.list-consultas', $trabajo->id) }}"
+                                                                data-toggle="tooltip" data-placement="top"
+                                                                title="Ver Falla de tag">
+                                                                <i class="fas fa-toolbox mr-2"></i>
+                                                            </a>
+                                                        @elseif($tag18->tfalla)
+                                                        @endif
+                                                    </td>
+
                                                 </tr>
+
                                             @endforeach
                                         </tbody>
                                     </table>
@@ -222,8 +245,8 @@
 
 
         <!-- Modal   y Editar-->
-        <div class="modal fade"wire:ignore.self id="formtrabajoedit" role="dialog" aria-labelledby="exampleModalLabel"
-            aria-hidden="true">
+        <div class="modal fade"wire:ignore.self id="formtrabajoedit" role="dialog"
+            aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog" role="document">
                 <form autocomplete="off" wire:submit.prevent="editTrabajoModal">
                     <div class="modal-content">
@@ -265,7 +288,8 @@
                                 <label for="descripcionfalla">Descripcion de Falla</label>
                                 <input type="text" wire:model.defer="descripcionfalla"
                                     class="form-control @error('descripcionfalla') is-invalid @enderror"
-                                    id="descripcionfalla" aria-describedby="descripcionfallaHelp" readonly="readonly">
+                                    id="descripcionfalla" aria-describedby="descripcionfallaHelp"
+                                    readonly="readonly">
                                 @error('descripcionfalla')
                                     <div class="invalid-feedback">
                                         {{ $message }}
@@ -275,7 +299,8 @@
 
                             <div class="form-group">
                                 <label for="descripciontrabajo1">Descripcion de Trabajo</label>
-                                <input type="text" style="text-transform:uppercase" wire:model.defer="descripciontrabajo1"
+                                <input type="text" style="text-transform:uppercase"
+                                    wire:model.defer="descripciontrabajo1"
                                     class="form-control @error('descripciontrabajo1') is-invalid @enderror"
                                     id="descripciontrabajo1" aria-describedby="descripciontrabajo1Help">
                                 @error('descripciontrabajo1')

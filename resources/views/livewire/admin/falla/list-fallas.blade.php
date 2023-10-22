@@ -158,6 +158,7 @@
                                                     class="img img-circle mr-1" alt="">
                                                     <td>{{ $falla->tagfallas->tag }}</td>
                                             </td>
+                                            {{-- <td>{{$falla->tagfallas->id}}</td> --}}
 
                                             <td>{{ $falla->tagfallas->descripcion }}</td>
                                             <td>{{ $falla->descripcion_falla }}</td>
@@ -171,11 +172,11 @@
                                                 @endif
                                             </td>
 
-
-
                                              {{-- <td>{{ $falla->fllastatus->status_revison }}</td>  --}}
                                             <td>{{ $falla->created_at }}</td>
                                             <td>
+
+
                                               <a href="" data-toggle="tooltip" data-placement="top" title="Editar Falla"
                                                      wire:click.prevent="edit({{ $falla }})">
                                                         <i class="fa fa-edit mr-2"></i>
@@ -190,7 +191,18 @@
                                                         wire:click.prevent="addtrabajo({{ $falla }})">
                                                         <i class="fas fa-brush mr-2"></i>
                                                     </a>
+
                                                     @endif
+
+                                                    {{-- SI TIENE TRABAJOS --}}
+                                                  {{--   @if ($tag18->ttrabajo == 'TRUE')
+                                                    @elseif($tag18->ttrabajo)
+                                                        <a href="" data-toggle="tooltip" data-placement="top" title="Agregar Trabajo"
+                                                        wire:click.prevent="agregartrabajo({{ $falla }})">
+                                                        <i class="fas fa-brush mr-2"></i>
+                                                        </a>
+                                                    @endif --}}
+
 
                                                     {{-- @if ($falla->fllastatus->status_revison == 'ATENDIDO')
                                                         <a  href="{{ route('admin.tag18s.list-trabajos', $tag18) }}"  >
@@ -199,8 +211,18 @@
                                                     @elseif($tag18->ttrabajo)
                                                     @endif --}}
 
-                                                {{-- </td> --}}
+                                                    {{-- SI TIENE TRABAJOS consultar trabajo--}}
+                                         {{--     @if ($falla->tagfallas->ttrabajo == 'TRUE') --}}
+                                          @if ($falla->fllastatus->status_revison = 'ATENDIDO')
+                                            <a  href="{{ route('admin.falla.list-consultas', $falla->id) }}"
+                                                 data-toggle="tooltip" data-placement="top" title="Consultar Trabajo" >
+                                                <i class="fas fa-address-book mr-2"></i>
+                                            </a>
+                                        @elseif($tag18->ttrabajo)
+                                        @endif
+
                                         </tr>
+
                                     @endforeach
                                 </tbody>
                             </table>
@@ -282,6 +304,7 @@
                             @enderror
                         </div>
 
+                        {{-- Descripcion de la Falla --}}
                         <div class="form-group">
                             <label for="descripcionfalla">Descripcion de Falla</label>
                             <input type="text"  style="text-transform:uppercase"  wire:model.defer="descripcionfalla"
@@ -299,30 +322,27 @@
 
                         {{-- seleccionar el status --}}
                         <div class="col-span-6 sm:col-span-3 mt-3">
-                            <div liwire:ignore>
+                            {{-- <div liwire:ignore> --}}
                                 <label for="" class="block text-sm font-medium text-gray-700">Status</label>
-                                <select wire:model.defer="selectedStatusModal" id="id_status"
-                                    class="form-control @error('selectedStatusModal') is-invalid @enderror">
-                                   {{--  <option value="">Seleccionar el Status</option> --}}
-                                    {{-- @foreach ($status as $statu)
-                                        <option value="{{ $statu->id }}">{{ $statu->desc_status }}
-                                        </option>
-                                    @endforeach --}}
+                                <select wire:model="selectedStatusModal" id="id_status"
+                                    class="form-control" @error('selectedStatusModal') is-invalid @enderror>
+                                    <option value=></option>
+                                    <option value=4>ATENDIDO</option>
                                     <option value=3>PEND. ATENDER</option>
                                 </select>
                                 @error('selectedStatusModal')
                                     <div class="invalid-feedback">
-                                        {{ $mensaje }}
+                                        {{ $message }}
                                     </div>
                                 @enderror
-                            </div>
+                            {{-- </div> --}}
                         </div> {{-- "col-md-6" --}}
 
 
                         {{-- escoger imagen --}}
                         <div class="col-md-12">
                             <div class="form-group">
-                                <label for="customFile">escoger imagen </label>
+                                <label for="customFile">Escoger imagen </label>
                                 @if ($foto_falla)
                                     <img src="{{ $foto_falla->temporaryUrl() }}" class="img img-circle d-block mb-2"
                                         style="width: 300px;" alt="">
@@ -337,8 +357,7 @@
                                 <div class="custom-file">
                                     <input wire:model="foto_falla" type="file" class="custom-file-input"
                                         id="customFile">
-                                    {{-- <div x-show.transition="isUploading" class="progress progress-sm mt-2 rounded">
-                                    </div> --}}
+                                        @error('foto_falla') <span class="text-danger">{{ $message }}</span> @enderror
                                     <label class="custom-file-label" for="customFile">
                                         @if ($foto_falla)
                                             {{ $foto_falla->getClientOriginalName() }}
@@ -445,7 +464,7 @@
                     {{-- Descripcion de Trabajo --}}
                     <div class="form-group">
                         <label for="descripciontrabajo">Descripcion del Trabajo</label>
-                        <input type="text" style="text-transform:uppercase" wire:model.defer="descripciontrabajo"
+                        <input type="text" style="text-transform:uppercase" wire:model="descripciontrabajo"
                             class="form-control @error('descripciontrabajo') is-invalid @enderror" id="descripciontrabajo"
                             aria-describedby="descripciontrabajoHelp">
                         @error('descripciontrabajo')
@@ -472,7 +491,7 @@
                             </select>
                             @error('selectedStatusModalTrabajoAgregar')
                                 <div class="invalid-feedback">
-                                    {{ $mensaje }}
+                                    {{ $message }}
                                 </div>
                             @enderror
                         </div>
@@ -496,6 +515,7 @@
                             <div class="custom-file">
                                 <input wire:model="foto_trabajo" type="file" class="custom-file-input"
                                     id="customFile">
+                                    @error('foto_trabajo') <span class="text-danger">{{ $message }}</span> @enderror
                                 {{-- <div x-show.transition="isUploading" class="progress progress-sm mt-2 rounded">
                                 </div> --}}
                                 <label class="custom-file-label" for="customFile">

@@ -19,10 +19,11 @@
         {{-- combo Centro --}}
         <div class="col-md-3">
             <div wire:ignore>
-                <label for="" class="text-warning" >Centros</label>
+                <label for="" class="text-warning">Centros</label>
                 <select wire:model="selectedCentro" id="id_centro" class="form-control select2">
                     @foreach ($centros as $centro)
-                        <option value="{{ $centro->id }}" class="p-3 mb-2 bg-primary text-white">{{ $centro->nombre_centro }}
+                        <option value="{{ $centro->id }}" class="p-3 mb-2 bg-primary text-white">
+                            {{ $centro->nombre_centro }}
                         </option>
                     @endforeach
                 </select>
@@ -36,7 +37,8 @@
                     <select wire:model="selectedPlanta"
                         class="form-control @error('selectedPlanta') is-invalid @enderror">
                         @foreach ($plantas as $planta)
-                            <option value="{{ $planta->id }}" class="p-3 mb-2 bg-primary text-white">{{ $planta->nombre_planta }}
+                            <option value="{{ $planta->id }}" class="p-3 mb-2 bg-primary text-white">
+                                {{ $planta->nombre_planta }}
                             </option>
                         @endforeach
                     </select>
@@ -49,7 +51,8 @@
                 <label for=" "class="text-warning">Categoria</label>
                 <select wire:model="selectedCategoria" class="form-control">
                     @foreach ($categorias as $categoria)
-                        <option value="{{ $categoria->id }}" class="p-3 mb-2 bg-primary text-white">{{ $categoria->descripcion_c }}
+                        <option value="{{ $categoria->id }}" class="p-3 mb-2 bg-primary text-white">
+                            {{ $categoria->descripcion_c }}
                         </option>
                     @endforeach
                 </select>
@@ -61,7 +64,8 @@
                 <label for="" class="text-warning">Status</label>
                 <select wire:model="selectedStatus" class="form-control">
                     @foreach ($status as $statu)
-                        <option value="{{ $statu->id }}" class="p-3 mb-2 bg-primary text-white">{{ $statu->desc_status }}
+                        <option value="{{ $statu->id }}" class="p-3 mb-2 bg-primary text-white">
+                            {{ $statu->desc_status }}
                         </option>
                     @endforeach
                 </select>
@@ -106,8 +110,8 @@
                 <div class="col-lg-12">
                     <div class="d-flex justify-content-end mb-2">
                         @can('permission_create')
-                        <button wire:click.prevent="addNewTag" class="btn btn-primary"><i
-                                class="fa fa-plus-circle mr-1"></i> Add New Tag</button>
+                            <button wire:click.prevent="addNewTag" class="btn btn-primary"><i
+                                    class="fa fa-plus-circle mr-1"></i> Add New Tag</button>
                         @endcan
                         {{--  <a href="{{ route('admin.tag18s.create') }}">
                             <button class="btn btn-primary"><i class="fa fa-plus-circle mr-1"></i> Add New
@@ -134,12 +138,18 @@
                                     <tbody>
                                         @foreach ($tag18s as $tag18)
                                             <tr>
+                                               {{--  <th>
+                                                    <div class="icheck-primary d-inline ml-2">
+                                                        <input wire:model="selectPageRows" type="checkbox" value="" name="todo2" id="todoCheck2">
+                                                        <label for="todoCheck2"></label>
+                                                    </div>
+                                                </th> --}}
                                                 <th scope="row">{{ $loop->iteration }}</th>
                                                 <td>
                                                     <img src="{{ $tag18->foto_url }}" style="width: 50px;"
-                                                          class="img img-circle mr-1" alt="">
+                                                        class="img img-circle mr-1" alt="">
                                                 </td>
-                                                <td>{{ $tag18->tag    }}</td>
+                                                <td>{{ $tag18->tag }}</td>
                                                 <td>{{ $tag18->descripcion }}</td>
                                                 <td>{{ $tag18->operacion }}</td>
                                                 <td>{{ $tag18->ubicacion }}</td>
@@ -157,9 +167,10 @@
                                                         <i class="fa fa-trash text-danger"></i>
                                                     </a> --}}
                                                     @can('permission_destroy')
-                                                    <a href="" wire:click.prevent="edit({{ $tag18 }})" data-toggle="tooltip" data-placement="top" title="Editar Tag">
-                                                        <i class="fa fa-edit mr-2"></i>
-                                                    </a>
+                                                        <a href="" wire:click.prevent="edit({{ $tag18 }})"
+                                                            data-toggle="tooltip" data-placement="top" title="Editar Tag">
+                                                            <i class="fa fa-edit mr-2"></i>
+                                                        </a>
                                                     @endcan
                                                 </td>
                                                 <td>
@@ -168,37 +179,41 @@
                                                     </a> --}}
                                                     {{-- ELIMINAR --}}
                                                     @can('permission_destroy')
-                                                    <a href="" data-toggle="tooltip" data-placement="top" title="Eliminar"
-                                                        wire:click.prevent="confirmTagRemoval({{ $tag18->id }})">
-                                                        <i class="fa fa-trash text-danger mr-2"></i>
-                                                    </a>
+                                                        <a href="" data-toggle="tooltip" data-placement="top"
+                                                            title="Eliminar"
+                                                            wire:click.prevent="confirmTagRemoval({{ $tag18->id }})">
+                                                            <i class="fa fa-trash text-danger mr-2"></i>
+                                                        </a>
                                                     @endcan
                                                 </td>
                                                 <td>
                                                     {{-- AGREGAR FALLA --}}
                                                     @if ($tag18->tag18stags->desc_status == 'DISPONIBLE')
-                                                        <a href="" data-toggle="tooltip" data-placement="top" title="Agregar Falla"
+                                                        <a href="" data-toggle="tooltip" data-placement="top"
+                                                            title="Agregar Falla"
                                                             wire:click.prevent="addfalla({{ $tag18 }})">
                                                             <i class="fas fa-frown mr-2"></i>
                                                         </a>
-                                                     @elseif($tag18->tag18stags->desc_status)
+                                                    @elseif($tag18->tag18stags->desc_status)
                                                     @endif
-                                                    </td>
-                                                    <td>
+                                                </td>
+                                                <td>
 
-                                                        {{-- SI TIENE FALLAS --}}
+                                                    {{-- SI TIENE FALLAS --}}
                                                     @if ($tag18->tfalla == 'TRUE')
-                                                        <a  href="{{ route('admin.tag18s.list-fallas', $tag18) }}" data-toggle="tooltip" title="Ver descripcion Falla"  >
+                                                        <a href="{{ route('admin.tag18s.list-fallas', $tag18) }}"
+                                                            data-toggle="tooltip" title="Ver descripcion Falla">
                                                             <i class="fas fa-toolbox mr-2"></i>
                                                         </a>
                                                     @elseif($tag18->tfalla)
                                                     @endif
-                                                    </td>
-                                                    <td>
+                                                </td>
+                                                <td>
 
                                                     {{-- SI TIENE TRABAJOS --}}
                                                     @if ($tag18->ttrabajo == 'TRUE')
-                                                        <a  href="{{ route('admin.tag18s.list-trabajos', $tag18) }}" data-toggle="tooltip" title="Ver descripcion trabajo" >
+                                                        <a href="{{ route('admin.tag18s.list-trabajos', $tag18) }}"
+                                                            data-toggle="tooltip" title="Ver descripcion trabajo">
                                                             <i class="fas fa-address-book mr-2"></i>
                                                         </a>
                                                     @elseif($tag18->ttrabajo)
@@ -260,9 +275,10 @@
                     </div>
                     <div class="modal-body">
 
+                        {{-- tag --}}
                         <div class="form-group">
                             <label for="tag">Tag</label>
-                            <input type="text" style="text-transform:uppercase" wire:model.defer="state.tag"
+                            <input type="text" style="text-transform:uppercase" wire:model="tag"
                                 class="form-control @error('tag') is-invalid @enderror" id="tag"
                                 aria-describedby="tagHelp" placeholder="Introducir nombre del Tag">
                             @error('tag')
@@ -272,10 +288,10 @@
                             @enderror
                         </div>
 
+                        {{-- descripcion --}}
                         <div class="form-group">
                             <label for="descripcion">Descripcion</label>
-                            <input type="text" style="text-transform:uppercase"
-                                wire:model.defer="state.descripcion"
+                            <input type="text" style="text-transform:uppercase" wire:model="descripcion"
                                 class="form-control @error('descripcion') is-invalid @enderror" id="descripcion"
                                 aria-describedby="descripcionHelp" placeholder="Introducir descripcion">
                             @error('descripcion')
@@ -285,11 +301,12 @@
                             @enderror
                         </div>
 
+                        {{-- operacion --}}
                         <div class="form-group">
                             <label for="operacion">Operacion</label>
-                            <input type="text" style="text-transform:uppercase" wire:model.defer="state.operacion"
+                            <input type="text" style="text-transform:uppercase" wire:model="operacion"
                                 class="form-control @error('operacion') is-invalid @enderror" id="operacion"
-                                aria-describedby="operacionHelp">
+                                aria-describedby="operacionHelp" placeholder="Kg/cm2,  etc...">
                             @error('operacion')
                                 <div class="invalid-feedback">
                                     {{ $message }}
@@ -297,24 +314,26 @@
                             @enderror
                         </div>
 
+                        {{-- ubicacion --}}
                         <div class="form-group">
                             <label for="ubicacion">Ubicacion</label>
-                            <input type="text" style="text-transform:uppercase" wire:model.defer="state.ubicacion"
+                            <input type="text" style="text-transform:uppercase" wire:model="ubicacion"
                                 class="form-control @error('ubicacion') is-invalid @enderror" id="ubicacion"
-                                aria-describedby="ubicacionHelp">
+                                aria-describedby="ubicacionHelp" placeholder="Ubicacion en la planta">
                             @error('ubicacion')
                                 <div class="invalid-feedback">
                                     {{ $message }}
                                 </div>
                             @enderror
                         </div>
-                        {{-- @livewire('admin.tag18.centro'); --}}
 
+
+                        {{-- @Seleccionar Centros --}}
                         <div class="col-span-6 sm:col-span-3">
                             <label for="centro" class="block text-sm font-medium text-gray-700">Centros</label>
                             <select select wire:model="selectedCentroModal" id="id_centromodal"
                                 class="form-control @error('selectedCentroModal') is-invalid @enderror">
-                                <option>--- Select a Centro ---</option>
+                                {{-- <option>--- Select a Centro ---</option> --}}
                                 @foreach ($modalcentros as $modalcentro)
                                     <option value="{{ $modalcentro->id }}">{{ $modalcentro->nombre_centro }}</option>
                                 @endforeach
@@ -327,15 +346,16 @@
                         </div>
 
 
+                        {{-- Seleccionar Planta --}}
                         <div class="col-span-6 sm:col-span-3 mt-3">
                             <div liwire:ignore>
                                 <label for="planta" class="block text-sm font-medium text-gray-700">Planta</label>
-                                {{-- <select wire:model.defer="selectedPlantaModal" id="state_id" --}}
-                                <select wire:model.defer="selectedPlantaModal" id="state_id"
+                                <select wire:model="selectedPlantaModal" id="state_id"
                                     class="form-control @error('selectedPlantaModal') is-invalid @enderror">
-                                    {{-- @if (count($modalplantas) == 0)
-                                    <option>Seleccionar una planta</option>
-                                @endif --}}
+                                    {{-- @if (count($modalplantas) == 0) --}}
+                                    {{-- <option>Seleccionar una planta</option> --}}
+                                    {{-- @endif --}}
+                                    <option value="" selected>Debe seleccionar un elemento</option>
                                     @foreach ($modalplantas as $modalplanta)
                                         <option value="{{ $modalplanta->id }}">{{ $modalplanta->nombre_planta }}
                                         </option>
@@ -347,12 +367,14 @@
                                     </div>
                                 @enderror
                             </div>
+
                         </div>
 
+                        {{-- Seleccion --}}
                         <div class="col-span-6 sm:col-span-3 mt-3">
                             {{-- <div liwire:ignore> --}}
-                            <label for="" class="block text-sm font-medium text-gray-700">Seccion</label>
-                            <select wire:model.defer="selectedSeccionModal" id="id_seccion"
+                            <label for="seccion" class="block text-sm font-medium text-gray-700">Seccion</label>
+                            <select wire:model="selectedSeccionModal" id="id_seccion"
                                 class="form-control @error('selectedSeccionModal') is-invalid @enderror">
                                 <option value="">Seleccionar la seccion</option>
                                 @foreach ($modalseccions as $modalseccion)
@@ -369,11 +391,11 @@
                             {{-- </div> --}}
                         </div> {{-- "col-md-6" --}}
 
+                        {{-- Seleccionar Categoria --}}
                         <div class="col-span-6 sm:col-span-3 mt-3">
                             <div liwire:ignore>
-                                <label for=""
-                                    class="block text-sm font-medium text-gray-700">Categoria</label>
-                                <select wire:model.defer="selectedCategoriaModal" id="id_categoria"
+                                <label for="categoria" class="block text-sm font-medium text-gray-700">Categoria</label>
+                                <select wire:model="selectedCategoriaModal" id="id_categoria"
                                     class="form-control @error('selectedCategoriaModal') is-invalid @enderror">
                                     <option value="">Seleccionar la categoria</option>
                                     @foreach ($modalcategorias as $modalcategoria)
@@ -391,12 +413,13 @@
                         </div> {{-- "col-md-6" --}}
 
 
+                        {{-- seleccionar status --}}
                         <div class="col-span-6 sm:col-span-3 mt-3">
                             <div liwire:ignore>
                                 <label for="" class="block text-sm font-medium text-gray-700">Status</label>
-                                <select wire:model.defer="selectedStatusModal" id="id_status"
+                                <select wire:model="selectedStatusModal" id="id_status"
                                     class="form-control @error('selectedStatusModal') is-invalid @enderror">
-                                    {{-- <option value="">Seleccionar el Status</option> --}}
+                                    <option value="">Seleccionar el Status</option>
                                     <option value=1>DISPONIBLE</option>
                                     <option value=2>NO DISPONIBLE</option>
 
@@ -414,6 +437,7 @@
                         </div> {{-- "col-md-6" --}}
 
 
+                        {{-- escoger imagen --}}
                         <div class="col-md-12">
                             <div class="form-group">
                                 <label for="customFile">escoger imagen </label>
@@ -421,35 +445,32 @@
                                     <img src="{{ $foto->temporaryUrl() }}" class="img img-circle d-block mb-2"
                                         style="width: 100px;" alt="">
                                 @else
-                                    {{--  <img src="https://cdn.pixabay.com/photo/2016/10/11/21/43/geometric-1732847_960_720.jpg" class="img img-circle d-block mb-2"
+                                      {{-- <img src="https://cdn.pixabay.com/photo/2016/10/11/21/43/geometric-1732847_960_720.jpg" class="img img-circle d-block mb-2"
                                         style="width: 100px;" alt=""> --}}
-                                    <img src="{{ $state['foto_url'] ?? '' }}" class="img img-circle d-block mb-2"
+                                      <img src="{{ $state['foto_url'] ?? '' }}" class="img img-circle d-block mb-2"
                                         style="width: 100px;" alt="">
                                 @endif
-
                                 {{-- aca es de la caja de texto --}}
                                 <div class="custom-file">
-                                    <input wire:model="foto" type="file" class="custom-file-input"
+                                    <input wire:model="foto" type="file" class="custom-file-input" 
                                         id="customFile">
-                                    {{-- <div x-show.transition="isUploading" class="progress progress-sm mt-2 rounded">
-                                    </div> --}}
+                                        @error('foto') <span class="text-danger">{{ $message }}</span> @enderror
                                     <label class="custom-file-label" for="customFile">
                                         @if ($foto)
                                             {{ $foto->getClientOriginalName() }}
                                         @else
-                                            Choose Image
+                                             Choose Image
+                                            {{--  {{ $foto->title }} --}}
                                         @endif
                                     </label>
                                 </div>
                                 {{-- @if ($photo)
                                 <img src="{{ $photo->temporaryUrl() }}"class="img d-block mt-2 w-100 rounded">
-                            @else
+                                    @else
                                 <img src="{{ $state['avatar_url'] ?? '' }}" class="img d-block mb-2 w-100 rounded">
-                            @endif --}}
+                                    @endif --}}
                             </div>
                         </div>
-
-
                     </div>
 
                     <div class="modal-footer">
@@ -550,22 +571,24 @@
                             </div>
                         </div>
 
+                        {{-- Descripcion de la falla --}}
                         <div class="form-group">
-                            <label for="descripcion">Descripcion de Falla del equipo</label>
+                            <label for="descripcionfalla">Descripcion de Falla del equipo</label>
                             <input type="text" style="text-transform:uppercase"
-                                wire:model.defer="statefalla.descripcionfalla"
-                                class="form-control @error('descripcion') is-invalid @enderror" id="descripcion"
-                                aria-describedby="descripcionHelp" placeholder="Introducir descripcion">
-                            @error('descripcion')
+                                wire:model="statefalla.descripcionfalla"
+                                class="form-control @error('descripcionfalla') is-invalid @enderror" id="descripcionfalla"
+                                aria-describedby="descripcionfallaHelp" placeholder="Introducir descripcion">
+                            @error('descripcionfalla')
                                 <div class="invalid-feedback">
                                     {{ $message }}
                                 </div>
                             @enderror
                         </div>
 
+                        {{-- Turno --}}
                         <div class="col-span-6 sm:col-span-3 mt-3">
                             <label for="turno" class="block text-sm font-medium text-gray-700">Turno</label>
-                            <select wire:model.defer="selectedTurnoFalla" id="state_id"
+                            <select wire:model="selectedTurnoFalla" id="state_id"
                                 class="form-control @error('selectedTurnoFalla') is-invalid @enderror">
                                 <option value="">Seleccionar el Turno</option>
                                 <option value="1">TURNO 1</option>
@@ -579,10 +602,12 @@
                             @enderror
                         </div>
 
+
+                        {{-- Status de la falla --}}
                         <div class="col-span-6 sm:col-span-3 mt-3">
                             <div liwire:ignore>
                                 <label for="" class="block text-sm font-medium text-gray-700">Status</label>
-                                <select wire:model.defer="selectedStatusFalla" id="id_status"
+                                <select wire:model="selectedStatusFalla" id="id_status"
                                     class="form-control @error('selectedStatusFalla') is-invalid @enderror">
                                     {{-- <option value="">Seleccionar el Status falla</option> --}}
                                     <option value="PEND. ATENDER">PEND. ATENDER</option>
@@ -602,24 +627,26 @@
                         {{-- imagen --}}
                         <div class="col-md-12">
                             <div class="form-group">
-                                <label for="customFile">Escoger imagen de falla </label>
-                                @if ($foto)
-                                    <img src="{{ $foto->temporaryUrl() }}" class="img img-circle d-block mb-2"
+                                <label for="customFile">Escoger imagen de falla 1 </label>
+                                @if ($foto_falla)
+                                    <img src="{{ $foto_falla->temporaryUrl() }}" class="img img-circle d-block mb-2"
                                         style="width: 300px;" alt="">
                                 @else
-                                    <img src="https://cdn.pixabay.com/photo/2016/10/11/21/43/geometric-1732847_960_720.jpg"
-                                        class="img img-circle d-block mb-2"
+                                    {{-- <img src="https://cdn.pixabay.com/photo/2016/10/11/21/43/geometric-1732847_960_720.jpg"
+                                        class="img img-circle d-block mb-2" style="width: 300px;" alt="">
+                                         --}}<img src="{{ $state['foto_url'] ?? '' }}" class="img img-circle d-block mb-2"
                                         style="width: 300px;" alt="">
                                 @endif
 
                                 {{-- aca es de la caja de texto --}}
                                 <div class="custom-file">
-                                    <input wire:model="foto" type="file" class="custom-file-input"
-                                        id="customFile">
+                                    <input wire:model="foto_falla" type="file" class="custom-file-input"
+                                        id="customFile" >
+                                        @error('foto_falla') <span class="text-danger">{{ $message }}</span> @enderror
 
                                     <label class="custom-file-label" for="customFile">
-                                        @if ($foto)
-                                            {{ $foto->getClientOriginalName() }}
+                                        @if ($foto_falla)
+                                            {{ $foto_falla->getClientOriginalName() }}
                                         @else
                                             Choose Image
                                         @endif
@@ -704,35 +731,34 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                             {{-- @foreach ($fallas as $falla) --}}
-                                        <tr>
-                                            {{-- <th scope="row">{{ $loop->iteration }}</th> --}}
-                                            {{-- <td>
+                                            {{-- @foreach ($fallas as $falla) --}}
+                                            <tr>
+                                                {{-- <th scope="row">{{ $loop->iteration }}</th> --}}
+                                                {{-- <td>
                                                 <img src="{{ $falla->foto_url }}" style="width: 50px;"
                                                     class="img img-circle mr-1" alt="">
                                                     <td>{{ $falla->tagfallas->tag }}</td>
                                             </td> --}}
 
 
-                                             {{-- <td>{{ $falla->descripcion_falla }}</td> --}}
-                                            <td>
-                                               {{--  @if ($falla->fllastatus->status_revison == 'PEND. ATENDER')
+                                                {{-- <td>{{ $falla->descripcion_falla }}</td> --}}
+                                                <td>
+                                                    {{--  @if ($falla->fllastatus->status_revison == 'PEND. ATENDER')
                                                     <span class="badge badge-primary">PEND. ATENDER</span>
                                                 @elseif($falla->fllastatus->status_revison)
                                                     <span class="badge badge-success">
                                                     {{ $falla->fllastatus->status_revison }}
                                                      </span>
                                                 @endif --}}
-                                            </td>
-                                                    {{-- <td>{{ $tag18->tag18Centro->nombre_centro }}</td> --}}
+                                                </td>
+                                                {{-- <td>{{ $tag18->tag18Centro->nombre_centro }}</td> --}}
 
-                                                    {{-- DISPONIBLE --}}
+                                                {{-- DISPONIBLE --}}
 
-                                                </tr>
-                                           {{-- @endforeach --}}
+                                            </tr>
+                                            {{-- @endforeach --}}
                                         </tbody>
                                     </table>
-
                                 @else
                                     No existe ningun registro coincidente
                                 @endif
@@ -790,9 +816,14 @@
     {{-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script> --}}
     <script type="text/javascript">
-        $(document).ready(function(){
-        $('[data-toggle="tooltip"]').tooltip();
-    });
+        $(document).ready(function() {
+            $('[data-toggle="tooltip"]').tooltip();
+        });
     </script>
-    @endpush
+    {{-- <script>
+        document.addEventListener('livewire:load', function(){
+            $
+        })
+    </script> --}}
+@endpush
 </div>

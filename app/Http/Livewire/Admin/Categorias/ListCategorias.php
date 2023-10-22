@@ -83,6 +83,8 @@ class ListCategorias extends Component
                 'descripcion_c.required' =>' La descripcion  es requerida.',
              ]
              )->validate();
+             
+             $validateDate['descripcion_c'] = strtoupper($this->state['descripcion_c']);/*convierte a mayuscula el registro tag */
 
              $this->categoria->update($validateDate);
              $this->dispatchBrowserEvent('hide-formcategoria',['message' => 'Categoria updated successfully!']);
